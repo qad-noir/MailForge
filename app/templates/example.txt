@@ -1,0 +1,5 @@
+Hello {{ contact.first_name }} {{ contact.last_name }},
+
+Here is the latest update from {{ campaign.name }}.
+
+Unsubscribe: {{ unsubscribe_url }}
