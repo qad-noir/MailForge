@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -28,14 +29,14 @@ console = Console()
 
 @contacts_app.command("import")
 def import_contacts(
-    csv_file: Path,
-    email_column: str = "email",
-    first_name_column: str = "first_name",
-    last_name_column: str = "last_name",
-    consent_column: str = "consent_status",
-    consent_source_column: str = "consent_source",
-    consent_date_column: str = "consent_date",
-    dry_run: bool = False,
+    csv_file: Annotated[Path, typer.Argument(exists=True, readable=True)],
+    email_column: str = typer.Option("email", "--email-column"),
+    first_name_column: str = typer.Option("first_name", "--first-name-column"),
+    last_name_column: str = typer.Option("last_name", "--last-name-column"),
+    consent_column: str = typer.Option("consent_status", "--consent-column"),
+    consent_source_column: str = typer.Option("consent_source", "--consent-source-column"),
+    consent_date_column: str = typer.Option("consent_date", "--consent-date-column"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
 ) -> None:
     async def command() -> None:
         settings = get_settings()
@@ -62,16 +63,20 @@ def import_contacts(
 
 @campaign_app.command("create")
 def create_campaign(
-    name: str,
-    subject: str,
-    html_template: Path,
-    text_template: Path,
-    from_name: str,
-    from_email: str,
-    timezone: str = "UTC",
-    rate: int = 1000,
-    batch_size: int = 100,
-    reply_to: str | None = None,
+    name: str = typer.Option(..., "--name"),
+    subject: str = typer.Option(..., "--subject"),
+    html_template: Annotated[
+        Path, typer.Option("--html-template", exists=True, readable=True)
+    ] = ...,
+    text_template: Annotated[
+        Path, typer.Option("--text-template", exists=True, readable=True)
+    ] = ...,
+    from_name: str = typer.Option(..., "--from-name"),
+    from_email: str = typer.Option(..., "--from-email"),
+    timezone: str = typer.Option("UTC", "--timezone"),
+    rate: int = typer.Option(1000, "--rate", min=1),
+    batch_size: int = typer.Option(100, "--batch-size", min=1),
+    reply_to: str | None = typer.Option(None, "--reply-to"),
 ) -> None:
     async def command() -> None:
         body = CampaignCreate(
@@ -94,7 +99,10 @@ def create_campaign(
 
 
 @campaign_app.command("preview")
-def preview(campaign_id: uuid.UUID, recipient: str) -> None:
+def preview(
+    campaign_id: uuid.UUID,
+    recipient: str = typer.Option(..., "--recipient"),
+) -> None:
     async def command() -> None:
         async with SessionFactory() as session:
             campaign = await CampaignService(session).get(campaign_id)
@@ -112,7 +120,10 @@ def preview(campaign_id: uuid.UUID, recipient: str) -> None:
 
 
 @campaign_app.command("test-send")
-def test_send(campaign_id: uuid.UUID, recipient: str) -> None:
+def test_send(
+    campaign_id: uuid.UUID,
+    recipient: str = typer.Option(..., "--recipient"),
+) -> None:
     async def command() -> None:
         settings = get_settings()
         async with SessionFactory() as session:
@@ -145,7 +156,10 @@ def test_send(campaign_id: uuid.UUID, recipient: str) -> None:
 
 
 @campaign_app.command("schedule")
-def schedule(campaign_id: uuid.UUID, start_at: str) -> None:
+def schedule(
+    campaign_id: uuid.UUID,
+    start_at: str = typer.Option(..., "--start-at"),
+) -> None:
     async def command() -> None:
         async with SessionFactory() as session:
             campaign = await CampaignService(session).schedule(
