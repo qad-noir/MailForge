@@ -16,4 +16,3 @@ def test_unsubscribe_token_rejects_tampering() -> None:
     token = service.create("contact-id", "user@example.com")
     with pytest.raises(ValueError):
         service.verify(token + "tampered")
-

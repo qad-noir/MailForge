@@ -62,4 +62,3 @@ class SendGridClient:
     async def close(self) -> None:
         if self._owns_client:
             await self.client.aclose()
-

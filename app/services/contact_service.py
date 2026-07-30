@@ -132,4 +132,3 @@ class ContactImportService:
             return None
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
         return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
-

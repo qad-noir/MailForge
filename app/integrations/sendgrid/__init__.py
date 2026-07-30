@@ -1,2 +1,1 @@
 """SendGrid Web API integration."""
-

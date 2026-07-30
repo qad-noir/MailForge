@@ -15,9 +15,7 @@ router = APIRouter(prefix="/campaigns", tags=["campaigns"])
 
 
 @router.post("", response_model=CampaignRead)
-async def create_campaign(
-    body: CampaignCreate, session: SessionDep, _: AdminDep
-) -> Campaign:
+async def create_campaign(body: CampaignCreate, session: SessionDep, _: AdminDep) -> Campaign:
     try:
         return await CampaignService(session).create(**body.model_dump(mode="json"))
     except ValueError as exc:
@@ -26,13 +24,13 @@ async def create_campaign(
 
 @router.get("", response_model=list[CampaignRead])
 async def list_campaigns(session: SessionDep, _: AdminDep) -> list[Campaign]:
-    return list((await session.scalars(select(Campaign).order_by(Campaign.created_at.desc()))).all())
+    return list(
+        (await session.scalars(select(Campaign).order_by(Campaign.created_at.desc()))).all()
+    )
 
 
 @router.get("/{campaign_id}", response_model=CampaignRead)
-async def get_campaign(
-    campaign_id: uuid.UUID, session: SessionDep, _: AdminDep
-) -> Campaign:
+async def get_campaign(campaign_id: uuid.UUID, session: SessionDep, _: AdminDep) -> Campaign:
     try:
         return await CampaignService(session).get(campaign_id)
     except ValueError as exc:
@@ -85,4 +83,3 @@ async def report(
     campaign_id: uuid.UUID, session: SessionDep, _: AdminDep
 ) -> dict[str, float | int]:
     return await ReportService(session).campaign_report(campaign_id)
-

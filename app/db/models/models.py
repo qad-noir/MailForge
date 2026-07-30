@@ -20,7 +20,6 @@ from app.db.models.enums import (
     CampaignStatus,
     ConsentStatus,
     RecipientStatus,
-    SuppressionType,
 )
 
 
@@ -120,9 +119,7 @@ class SendAttempt(Base):
 
 class Suppression(Base):
     __tablename__ = "suppressions"
-    __table_args__ = (
-        UniqueConstraint("email_normalized", name="uq_suppression_email"),
-    )
+    __table_args__ = (UniqueConstraint("email_normalized", name="uq_suppression_email"),)
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email_normalized: Mapped[str] = mapped_column(String(320), index=True)
     suppression_type: Mapped[str] = mapped_column(String(32))
@@ -158,4 +155,3 @@ class AuditLog(Base):
     actor: Mapped[str] = mapped_column(String(255))
     details: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-

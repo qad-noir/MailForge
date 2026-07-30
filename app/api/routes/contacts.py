@@ -1,4 +1,5 @@
 import io
+from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from sqlalchemy import select
@@ -15,7 +16,7 @@ async def import_contacts(
     session: SessionDep,
     settings: SettingsDep,
     _: AdminDep,
-    file: UploadFile = File(...),
+    file: Annotated[UploadFile, File()],
     dry_run: bool = False,
 ) -> dict[str, int]:
     data = await file.read(settings.max_csv_bytes + 1)
@@ -37,7 +38,10 @@ async def list_contacts(
 ) -> list[dict[str, object]]:
     contacts = (
         await session.scalars(
-            select(Contact).order_by(Contact.created_at.desc()).limit(min(limit, 1000)).offset(offset)
+            select(Contact)
+            .order_by(Contact.created_at.desc())
+            .limit(min(limit, 1000))
+            .offset(offset)
         )
     ).all()
     return [
@@ -51,4 +55,3 @@ async def list_contacts(
         }
         for contact in contacts
     ]
-

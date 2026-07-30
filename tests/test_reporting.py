@@ -13,4 +13,3 @@ def test_report_export() -> None:
     output = io.StringIO()
     ReportService.export_csv({"delivered": 10}, output)
     assert output.getvalue().splitlines() == ["metric,value", "delivered,10"]
-

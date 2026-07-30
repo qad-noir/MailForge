@@ -1,6 +1,5 @@
 import csv
 import uuid
-from collections.abc import Iterable
 from io import TextIOBase
 
 from sqlalchemy import func, select
@@ -36,9 +35,7 @@ class ReportService:
         denominator = max(total, 1)
         result["delivery_percentage"] = round(counts.get("delivered", 0) * 100 / denominator, 2)
         result["bounce_percentage"] = round(counts.get("bounced", 0) * 100 / denominator, 2)
-        result["complaint_percentage"] = round(
-            counts.get("spam_report", 0) * 100 / denominator, 2
-        )
+        result["complaint_percentage"] = round(counts.get("spam_report", 0) * 100 / denominator, 2)
         return result
 
     @staticmethod

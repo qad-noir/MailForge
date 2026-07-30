@@ -34,4 +34,3 @@ def verify_admin_token(provided: str, expected: str) -> bool:
 
 def deterministic_event_id(raw: bytes) -> str:
     return f"fallback:{sha256(raw).hexdigest()}"
-

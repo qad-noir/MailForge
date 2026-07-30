@@ -11,9 +11,7 @@ router = APIRouter(prefix="/webhooks/sendgrid", tags=["webhooks"])
 
 
 @router.post("/events", status_code=202)
-async def events(
-    request: Request, session: SessionDep, settings: SettingsDep
-) -> dict[str, int]:
+async def events(request: Request, session: SessionDep, settings: SettingsDep) -> dict[str, int]:
     body = await request.body()
     signature = request.headers.get("x-twilio-email-event-webhook-signature", "")
     timestamp = request.headers.get("x-twilio-email-event-webhook-timestamp", "")
@@ -32,4 +30,3 @@ async def events(
     except (json.JSONDecodeError, ValueError) as exc:
         raise HTTPException(422, str(exc)) from exc
     return {"accepted": len(payload), "inserted": inserted}
-

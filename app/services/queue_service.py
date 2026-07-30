@@ -1,8 +1,10 @@
 import uuid
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime, timedelta
+from typing import cast
 
-from sqlalchemy import and_, or_, select, update
+from sqlalchemy import or_, select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Campaign, CampaignRecipient, Contact, Suppression
@@ -31,9 +33,7 @@ class PostgresQueueBackend(QueueBackend):
                     CampaignRecipient.next_attempt_at.is_(None),
                     CampaignRecipient.next_attempt_at <= now,
                 ),
-                Campaign.status.in_(
-                    [CampaignStatus.QUEUED.value, CampaignStatus.SENDING.value]
-                ),
+                Campaign.status.in_([CampaignStatus.QUEUED.value, CampaignStatus.SENDING.value]),
             )
             .order_by(CampaignRecipient.next_attempt_at, CampaignRecipient.created_at)
             .limit(batch_size)
@@ -49,19 +49,22 @@ class PostgresQueueBackend(QueueBackend):
         return recipients
 
     async def recover_stale(self, timeout_seconds: int) -> int:
-        result = await self.session.execute(
-            update(CampaignRecipient)
-            .where(
-                CampaignRecipient.status == RecipientStatus.PROCESSING.value,
-                CampaignRecipient.processing_started_at
-                < datetime.now(UTC) - timedelta(seconds=timeout_seconds),
-            )
-            .values(
-                status=RecipientStatus.QUEUED.value,
-                claimed_at=None,
-                claimed_by=None,
-                processing_started_at=None,
-            )
+        result = cast(
+            CursorResult[tuple[()]],
+            await self.session.execute(
+                update(CampaignRecipient)
+                .where(
+                    CampaignRecipient.status == RecipientStatus.PROCESSING.value,
+                    CampaignRecipient.processing_started_at
+                    < datetime.now(UTC) - timedelta(seconds=timeout_seconds),
+                )
+                .values(
+                    status=RecipientStatus.QUEUED.value,
+                    claimed_at=None,
+                    claimed_by=None,
+                    processing_started_at=None,
+                )
+            ),
         )
         await self.session.commit()
         return result.rowcount

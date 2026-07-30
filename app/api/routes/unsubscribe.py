@@ -13,7 +13,9 @@ from app.services.suppression_service import SuppressionService
 router = APIRouter(tags=["unsubscribe"])
 
 
-async def perform_unsubscribe(token: str, session: SessionDep, settings: SettingsDep) -> HTMLResponse:
+async def perform_unsubscribe(
+    token: str, session: SessionDep, settings: SettingsDep
+) -> HTMLResponse:
     try:
         claims = UnsubscribeTokenService(settings.unsubscribe_signing_secret).verify(token)
         contact = await session.scalar(
@@ -35,15 +37,10 @@ async def perform_unsubscribe(token: str, session: SessionDep, settings: Setting
 
 
 @router.get("/unsubscribe/{token}", response_class=HTMLResponse)
-async def unsubscribe_get(
-    token: str, session: SessionDep, settings: SettingsDep
-) -> HTMLResponse:
+async def unsubscribe_get(token: str, session: SessionDep, settings: SettingsDep) -> HTMLResponse:
     return await perform_unsubscribe(token, session, settings)
 
 
 @router.post("/unsubscribe/{token}", response_class=HTMLResponse)
-async def unsubscribe_post(
-    token: str, session: SessionDep, settings: SettingsDep
-) -> HTMLResponse:
+async def unsubscribe_post(token: str, session: SessionDep, settings: SettingsDep) -> HTMLResponse:
     return await perform_unsubscribe(token, session, settings)
-

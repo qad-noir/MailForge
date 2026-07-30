@@ -11,4 +11,3 @@ def test_normalize_email() -> None:
 def test_invalid_email(value: str) -> None:
     with pytest.raises(ValueError):
         normalize_email(value)
-

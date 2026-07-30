@@ -26,4 +26,3 @@ def test_html_rendering_escapes_contact_data() -> None:
     )
     assert "&lt;script&gt;" in rendered.html
     assert "<script>" in rendered.text
-

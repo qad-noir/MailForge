@@ -32,4 +32,3 @@ class PreviewRequest(BaseModel):
     recipient: EmailStr
     first_name: str = "Test"
     last_name: str = "Recipient"
-

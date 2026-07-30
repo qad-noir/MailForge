@@ -58,9 +58,7 @@ class WebhookService:
                     campaign_recipient_id=recipient_id,
                     event_type=str(event.get("event", "unknown")),
                     email_normalized=email,
-                    timestamp=datetime.fromtimestamp(
-                        int(event.get("timestamp", 0)), UTC
-                    ),
+                    timestamp=datetime.fromtimestamp(int(event.get("timestamp", 0)), UTC),
                     raw_event=event,
                     created_at=datetime.now(UTC),
                 )
@@ -103,4 +101,3 @@ class WebhookService:
             return uuid.UUID(str(value)) if value else None
         except ValueError:
             return None
-

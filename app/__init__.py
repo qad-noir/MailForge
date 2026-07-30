@@ -1,2 +1,1 @@
 """Lead Sender application."""
-

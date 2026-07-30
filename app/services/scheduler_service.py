@@ -32,19 +32,15 @@ class SchedulerService:
         for campaign in campaigns:
             campaign.status = CampaignStatus.QUEUEING.value
             await self.session.flush()
-            contact_ids = (
-                await self.session.stream_scalars(
-                    select(Contact.id)
-                    .outerjoin(
-                        Suppression, Suppression.email_normalized == Contact.email_normalized
-                    )
-                    .where(
-                        Contact.is_active.is_(True),
-                        Contact.consent_status == ConsentStatus.OPTED_IN.value,
-                        Suppression.id.is_(None),
-                    )
-                    .execution_options(yield_per=campaign.batch_size)
+            contact_ids = await self.session.stream_scalars(
+                select(Contact.id)
+                .outerjoin(Suppression, Suppression.email_normalized == Contact.email_normalized)
+                .where(
+                    Contact.is_active.is_(True),
+                    Contact.consent_status == ConsentStatus.OPTED_IN.value,
+                    Suppression.id.is_(None),
                 )
+                .execution_options(yield_per=campaign.batch_size)
             )
             batch: list[dict[str, object]] = []
             async for contact_id in contact_ids:
@@ -74,4 +70,3 @@ class SchedulerService:
             .values(rows)
             .on_conflict_do_nothing(index_elements=["campaign_id", "contact_id"])
         )
-

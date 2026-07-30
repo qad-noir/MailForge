@@ -97,4 +97,3 @@ class CampaignService:
                 created_at=datetime.now(UTC),
             )
         )
-

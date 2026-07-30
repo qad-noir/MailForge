@@ -1,5 +1,4 @@
 import asyncio
-import io
 import json
 import uuid
 from datetime import datetime
@@ -9,10 +8,8 @@ from types import SimpleNamespace
 import typer
 from rich.console import Console
 from rich.table import Table
-from sqlalchemy import select
 
 from app.core.config import get_settings
-from app.db.models import Campaign
 from app.db.session import SessionFactory
 from app.integrations.sendgrid.client import SendGridClient
 from app.schemas import CampaignCreate
@@ -44,22 +41,21 @@ def import_contacts(
         settings = get_settings()
         if csv_file.stat().st_size > settings.max_csv_bytes:
             raise typer.BadParameter("CSV file exceeds configured size limit")
-        async with SessionFactory() as session, csv_file.open(
-            encoding="utf-8-sig", newline=""
-        ) as stream:
-            stats = await ContactImportService(
-                session, settings.max_csv_rows, settings.max_metadata_bytes
-            ).import_csv(
-                stream,
-                email_column=email_column,
-                first_name_column=first_name_column,
-                last_name_column=last_name_column,
-                consent_column=consent_column,
-                consent_source_column=consent_source_column,
-                consent_date_column=consent_date_column,
-                dry_run=dry_run,
-            )
-            console.print_json(json.dumps(vars(stats)))
+        async with SessionFactory() as session:
+            with csv_file.open(encoding="utf-8-sig", newline="") as stream:
+                stats = await ContactImportService(
+                    session, settings.max_csv_rows, settings.max_metadata_bytes
+                ).import_csv(
+                    stream,
+                    email_column=email_column,
+                    first_name_column=first_name_column,
+                    last_name_column=last_name_column,
+                    consent_column=consent_column,
+                    consent_source_column=consent_source_column,
+                    consent_date_column=consent_date_column,
+                    dry_run=dry_run,
+                )
+                console.print_json(json.dumps(vars(stats)))
 
     asyncio.run(command())
 
@@ -106,9 +102,7 @@ def preview(campaign_id: uuid.UUID, recipient: str) -> None:
                 subject=campaign.subject,
                 html=campaign.html_template,
                 text=campaign.text_template,
-                contact=SimpleNamespace(
-                    email=recipient, first_name="Test", last_name="Recipient"
-                ),
+                contact=SimpleNamespace(email=recipient, first_name="Test", last_name="Recipient"),
                 campaign=campaign,
                 unsubscribe_url="https://example.invalid/unsubscribe/preview",
             )
@@ -127,9 +121,7 @@ def test_send(campaign_id: uuid.UUID, recipient: str) -> None:
                 subject=campaign.subject,
                 html=campaign.html_template,
                 text=campaign.text_template,
-                contact=SimpleNamespace(
-                    email=recipient, first_name="Test", last_name="Recipient"
-                ),
+                contact=SimpleNamespace(email=recipient, first_name="Test", last_name="Recipient"),
                 campaign=campaign,
                 unsubscribe_url="https://example.invalid/unsubscribe/test",
             )
@@ -227,4 +219,3 @@ def report(campaign_id: uuid.UUID, export: Path | None = None) -> None:
 
 if __name__ == "__main__":
     app()
-

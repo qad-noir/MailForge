@@ -8,4 +8,3 @@ router.include_router(contacts.router)
 router.include_router(campaigns.router)
 router.include_router(unsubscribe.router)
 router.include_router(webhooks.router)
-

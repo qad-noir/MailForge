@@ -41,4 +41,3 @@ class SuppressionType(StrEnum):
     MANUAL = "manual"
     BLOCKED = "blocked"
     INVALID = "invalid"
-

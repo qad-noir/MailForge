@@ -62,4 +62,3 @@ class SuppressionService:
                 .values(status=recipient_status, completed_at=datetime.now(UTC))
             )
         await self.session.commit()
-

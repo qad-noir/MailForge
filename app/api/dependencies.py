@@ -21,4 +21,3 @@ async def require_admin(
 
 
 AdminDep = Annotated[None, Depends(require_admin)]
-

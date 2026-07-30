@@ -48,4 +48,3 @@ class TemplateService:
             html=self.html_environment.from_string(html).render(context),
             text=self.text_environment.from_string(text).render(context),
         )
-

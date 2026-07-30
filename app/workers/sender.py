@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def calculate_backoff(attempt: int, base: float = 2, cap: float = 3600) -> float:
-    return min(cap, base * (2 ** max(0, attempt - 1))) * random.uniform(0.5, 1.5)
+    return float(min(cap, base * (2 ** max(0, attempt - 1))) * random.uniform(0.5, 1.5))
 
 
 class SenderWorker:
@@ -62,9 +62,7 @@ class SenderWorker:
     async def process(self, recipient_id: uuid.UUID) -> None:
         async with SessionFactory() as session:
             recipient = await session.scalar(
-                select(CampaignRecipient)
-                .where(CampaignRecipient.id == recipient_id)
-                .options()
+                select(CampaignRecipient).where(CampaignRecipient.id == recipient_id).options()
             )
             if recipient is None:
                 return
@@ -86,9 +84,9 @@ class SenderWorker:
             delay = (slot - datetime.now(UTC)).total_seconds()
             if delay > 0:
                 await asyncio.sleep(delay)
-            token = UnsubscribeTokenService(
-                self.settings.unsubscribe_signing_secret
-            ).create(str(contact.id), contact.email_normalized)
+            token = UnsubscribeTokenService(self.settings.unsubscribe_signing_secret).create(
+                str(contact.id), contact.email_normalized
+            )
             unsubscribe_url = f"{self.settings.app_base_url}/unsubscribe/{token}"
             rendered = TemplateService().render(
                 subject=campaign.subject,

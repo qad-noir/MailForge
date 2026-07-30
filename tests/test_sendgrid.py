@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 
 import pytest
 
@@ -27,4 +27,3 @@ def test_backoff_is_exponential_with_bounded_jitter(monkeypatch: pytest.MonkeyPa
     assert calculate_backoff(1) == 2
     assert calculate_backoff(4) == 16
     assert calculate_backoff(20) == 3600
-

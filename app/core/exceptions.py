@@ -16,4 +16,3 @@ class ValidationError(LeadSenderError):
 
 class InvalidStateError(ConflictError):
     pass
-

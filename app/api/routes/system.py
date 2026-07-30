@@ -18,4 +18,3 @@ async def ready(session: SessionDep) -> dict[str, str]:
     except Exception as exc:
         raise HTTPException(503, "Database unavailable") from exc
     return {"status": "ready"}
-

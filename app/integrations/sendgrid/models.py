@@ -36,4 +36,3 @@ def safe_attempt_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "has_text": any(item.get("type") == "text/plain" for item in payload.get("content", [])),
         "custom_args": personalizations[0].get("custom_args", {}) if personalizations else {},
     }
-
