@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: lead_sender
+      POSTGRES_DB: mailforge
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d lead_sender"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mailforge"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -48,4 +48,3 @@ services:
 
 volumes:
   postgres_data:
-

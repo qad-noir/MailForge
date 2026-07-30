@@ -1,6 +1,6 @@
-# Lead Sender
+# MailForge
 
-Lead Sender is a production-oriented MVP for permission-based email campaigns through the
+MailForge is a production-oriented MVP for permission-based email campaigns through the
 SendGrid Web API. It deliberately refuses to treat unknown consent as permission and is not
 designed for scraped, purchased, harvested, or unverified lists.
 
@@ -62,19 +62,19 @@ The one-shot scheduler exits after due campaigns and is appropriate for cron.
 ## CLI examples
 
 ```bash
-lead-sender contacts import leads.csv --email-column email --consent-column consent_status
-lead-sender campaign create --name "August Product Update" --subject "Your August update" \
+mailforge contacts import leads.csv --email-column email --consent-column consent_status
+mailforge campaign create --name "August Product Update" --subject "Your August update" \
   --html-template app/templates/example.html --text-template app/templates/example.txt \
   --from-name "Company Name" --from-email updates@example.com --timezone Africa/Lagos \
   --rate 3000 --batch-size 100
-lead-sender campaign preview CAMPAIGN_ID --recipient test@example.com
-lead-sender campaign test-send CAMPAIGN_ID --recipient test@example.com
-lead-sender campaign schedule CAMPAIGN_ID --start-at "2026-08-01 09:00"
-lead-sender campaign status CAMPAIGN_ID
-lead-sender campaign pause CAMPAIGN_ID
-lead-sender campaign resume CAMPAIGN_ID
-lead-sender campaign cancel CAMPAIGN_ID
-lead-sender campaign report CAMPAIGN_ID --export report.csv
+mailforge campaign preview CAMPAIGN_ID --recipient test@example.com
+mailforge campaign test-send CAMPAIGN_ID --recipient test@example.com
+mailforge campaign schedule CAMPAIGN_ID --start-at "2026-08-01 09:00"
+mailforge campaign status CAMPAIGN_ID
+mailforge campaign pause CAMPAIGN_ID
+mailforge campaign resume CAMPAIGN_ID
+mailforge campaign cancel CAMPAIGN_ID
+mailforge campaign report CAMPAIGN_ID --export report.csv
 ```
 
 Every imported row must contain `opted_in` in its consent column. Suppressed and unsubscribed

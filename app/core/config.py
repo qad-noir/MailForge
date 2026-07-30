@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     app_base_url: str = "http://localhost:8000"
     log_level: str = "INFO"
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/lead_sender"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/mailforge"
     admin_api_token: str = "change-me-in-production"
     unsubscribe_signing_secret: str = "change-me-in-production"
     sendgrid_api_key: str = ""
@@ -36,6 +36,11 @@ class Settings(BaseSettings):
         if value.startswith("postgresql://"):
             return value.replace("postgresql://", "postgresql+asyncpg://", 1)
         return value
+
+    @field_validator("sendgrid_unsubscribe_group_id", mode="before")
+    @classmethod
+    def empty_unsubscribe_group_is_none(cls, value: object) -> object:
+        return None if value == "" else value
 
 
 @lru_cache

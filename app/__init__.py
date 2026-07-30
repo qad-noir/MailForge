@@ -1,1 +1,1 @@
-"""Lead Sender application."""
+"""MailForge application."""

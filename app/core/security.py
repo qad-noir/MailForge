@@ -13,7 +13,7 @@ class UnsubscribeClaims:
 
 class UnsubscribeTokenService:
     def __init__(self, secret: str) -> None:
-        self.serializer = URLSafeSerializer(secret, salt="lead-sender-unsubscribe-v1")
+        self.serializer = URLSafeSerializer(secret, salt="mailforge-unsubscribe-v1")
 
     def create(self, contact_id: str, email_normalized: str) -> str:
         return self.serializer.dumps({"cid": contact_id, "email": email_normalized})
